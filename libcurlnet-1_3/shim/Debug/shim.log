@@ -1,0 +1,39 @@
+﻿Build started 25.07.2015 14:20:32.
+     1>Project "D:\libcurlnet-1_3\shim\shim.vcxproj" on node 3 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D LIBCURLSHIM_EXPORTS /D _WINDLL /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt array.c assert.c except.c LibCurlShim.c list.c mem.c seq.c table.c
+         table.c
+         seq.c
+         mem.c
+         list.c
+         LibCurlShim.c
+         This will break in 64-bits, unless cURL is rebuilt
+     1>d:\libcurlnet-1_3\shim\libcurlshim.c(137): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : see declaration of 'strcpy'
+     1>d:\libcurlnet-1_3\shim\libcurlshim.c(160): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : see declaration of 'strcpy'
+     1>d:\libcurlnet-1_3\shim\libcurlshim.c(396): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\time.inl(112) : see declaration of 'localtime'
+         except.c
+         assert.c
+         array.c
+         Generating Code...
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(1193,5): warning MSB8012: TargetPath(D:\libcurlnet-1_3\shim\Debug\shim.dll) does not match the Linker's OutputFile property value (D:\libcurlnet-1_3\bin\LibCurlShim.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(1195,5): warning MSB8012: TargetName(shim) does not match the Linker's OutputFile property value (LibCurlShim). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\bin\LibCurlShim.dll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"Debug\LibCurlShim.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"Debug\LibCurlShim.lib" /MACHINE:X86 /SAFESEH /DLL Debug\array.obj
+         Debug\assert.obj
+         Debug\except.obj
+         Debug\LibCurlShim.obj
+         Debug\list.obj
+         Debug\mem.obj
+         Debug\seq.obj
+         Debug\table.obj
+     1>array.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
+            Creating library Debug\LibCurlShim.lib and object Debug\LibCurlShim.exp
+         shim.vcxproj -> D:\libcurlnet-1_3\shim\Debug\shim.dll
+     1>Done Building Project "D:\libcurlnet-1_3\shim\shim.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:04.67
