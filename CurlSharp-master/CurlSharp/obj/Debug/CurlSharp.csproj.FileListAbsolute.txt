@@ -1,0 +1,5 @@
+C:\GitHub\External\CurlSharp-master\CurlSharp\bin\Debug\CurlSharp.dll
+C:\GitHub\External\CurlSharp-master\CurlSharp\bin\Debug\CurlSharp.pdb
+C:\GitHub\External\CurlSharp-master\CurlSharp\obj\Debug\CurlSharp.csprojResolveAssemblyReference.cache
+C:\GitHub\External\CurlSharp-master\CurlSharp\obj\Debug\CurlSharp.dll
+C:\GitHub\External\CurlSharp-master\CurlSharp\obj\Debug\CurlSharp.pdb

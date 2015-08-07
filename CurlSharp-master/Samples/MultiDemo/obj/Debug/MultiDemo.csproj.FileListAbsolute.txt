@@ -1,0 +1,6 @@
+C:\GitHub\External\CurlSharp-master\Samples\MultiDemo\bin\Debug\MultiDemo.exe
+C:\GitHub\External\CurlSharp-master\Samples\MultiDemo\bin\Debug\MultiDemo.pdb
+C:\GitHub\External\CurlSharp-master\Samples\MultiDemo\bin\Debug\CurlSharp.dll
+C:\GitHub\External\CurlSharp-master\Samples\MultiDemo\bin\Debug\CurlSharp.pdb
+C:\GitHub\External\CurlSharp-master\Samples\MultiDemo\obj\Debug\MultiDemo.exe
+C:\GitHub\External\CurlSharp-master\Samples\MultiDemo\obj\Debug\MultiDemo.pdb

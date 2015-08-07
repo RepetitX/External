@@ -1,0 +1,5 @@
+C:\GitHub\External\SQLQueryGenerator\bin\Debug\SQLQueryGenerator.dll
+C:\GitHub\External\SQLQueryGenerator\bin\Debug\SQLQueryGenerator.pdb
+C:\GitHub\External\SQLQueryGenerator\obj\Debug\SQLQueryGenerator.csprojResolveAssemblyReference.cache
+C:\GitHub\External\SQLQueryGenerator\obj\Debug\SQLQueryGenerator.dll
+C:\GitHub\External\SQLQueryGenerator\obj\Debug\SQLQueryGenerator.pdb

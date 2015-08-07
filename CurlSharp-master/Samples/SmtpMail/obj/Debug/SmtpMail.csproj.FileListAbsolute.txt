@@ -1,0 +1,7 @@
+C:\GitHub\External\CurlSharp-master\Samples\SmtpMail\bin\Debug\SmtpMail.exe.config
+C:\GitHub\External\CurlSharp-master\Samples\SmtpMail\bin\Debug\SmtpMail.exe
+C:\GitHub\External\CurlSharp-master\Samples\SmtpMail\bin\Debug\SmtpMail.pdb
+C:\GitHub\External\CurlSharp-master\Samples\SmtpMail\bin\Debug\CurlSharp.dll
+C:\GitHub\External\CurlSharp-master\Samples\SmtpMail\bin\Debug\CurlSharp.pdb
+C:\GitHub\External\CurlSharp-master\Samples\SmtpMail\obj\Debug\SmtpMail.exe
+C:\GitHub\External\CurlSharp-master\Samples\SmtpMail\obj\Debug\SmtpMail.pdb

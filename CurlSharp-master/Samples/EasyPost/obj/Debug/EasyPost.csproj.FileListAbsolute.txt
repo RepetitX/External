@@ -1,0 +1,7 @@
+C:\GitHub\External\CurlSharp-master\Samples\EasyPost\bin\Debug\EasyPost.exe.config
+C:\GitHub\External\CurlSharp-master\Samples\EasyPost\bin\Debug\EasyPost.exe
+C:\GitHub\External\CurlSharp-master\Samples\EasyPost\bin\Debug\EasyPost.pdb
+C:\GitHub\External\CurlSharp-master\Samples\EasyPost\bin\Debug\CurlSharp.dll
+C:\GitHub\External\CurlSharp-master\Samples\EasyPost\bin\Debug\CurlSharp.pdb
+C:\GitHub\External\CurlSharp-master\Samples\EasyPost\obj\Debug\EasyPost.exe
+C:\GitHub\External\CurlSharp-master\Samples\EasyPost\obj\Debug\EasyPost.pdb

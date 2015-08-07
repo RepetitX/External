@@ -1,0 +1,6 @@
+C:\GitHub\External\CurlSharp-master\Samples\InfoDemo\bin\Debug\InfoDemo.exe
+C:\GitHub\External\CurlSharp-master\Samples\InfoDemo\bin\Debug\InfoDemo.pdb
+C:\GitHub\External\CurlSharp-master\Samples\InfoDemo\bin\Debug\CurlSharp.dll
+C:\GitHub\External\CurlSharp-master\Samples\InfoDemo\bin\Debug\CurlSharp.pdb
+C:\GitHub\External\CurlSharp-master\Samples\InfoDemo\obj\Debug\InfoDemo.exe
+C:\GitHub\External\CurlSharp-master\Samples\InfoDemo\obj\Debug\InfoDemo.pdb

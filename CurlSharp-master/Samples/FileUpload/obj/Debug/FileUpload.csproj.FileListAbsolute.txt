@@ -1,0 +1,6 @@
+C:\GitHub\External\CurlSharp-master\Samples\FileUpload\bin\Debug\FileUpload.exe
+C:\GitHub\External\CurlSharp-master\Samples\FileUpload\bin\Debug\FileUpload.pdb
+C:\GitHub\External\CurlSharp-master\Samples\FileUpload\bin\Debug\CurlSharp.dll
+C:\GitHub\External\CurlSharp-master\Samples\FileUpload\bin\Debug\CurlSharp.pdb
+C:\GitHub\External\CurlSharp-master\Samples\FileUpload\obj\Debug\FileUpload.exe
+C:\GitHub\External\CurlSharp-master\Samples\FileUpload\obj\Debug\FileUpload.pdb

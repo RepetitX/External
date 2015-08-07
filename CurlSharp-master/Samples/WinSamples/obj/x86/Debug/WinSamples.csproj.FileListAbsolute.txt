@@ -1,0 +1,8 @@
+C:\GitHub\External\CurlSharp-master\Samples\bin\WinSamples.exe
+C:\GitHub\External\CurlSharp-master\Samples\bin\WinSamples.pdb
+C:\GitHub\External\CurlSharp-master\Samples\WinSamples\obj\x86\Debug\WinSamples.csprojResolveAssemblyReference.cache
+C:\GitHub\External\CurlSharp-master\Samples\WinSamples\obj\x86\Debug\WinSamples.FormGetSource.resources
+C:\GitHub\External\CurlSharp-master\Samples\WinSamples\obj\x86\Debug\WinSamples.Properties.Resources.resources
+C:\GitHub\External\CurlSharp-master\Samples\WinSamples\obj\x86\Debug\WinSamples.csproj.GenerateResource.Cache
+C:\GitHub\External\CurlSharp-master\Samples\WinSamples\obj\x86\Debug\WinSamples.exe
+C:\GitHub\External\CurlSharp-master\Samples\WinSamples\obj\x86\Debug\WinSamples.pdb

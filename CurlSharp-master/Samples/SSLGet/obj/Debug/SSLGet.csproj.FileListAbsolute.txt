@@ -1,0 +1,6 @@
+C:\GitHub\External\CurlSharp-master\Samples\SSLGet\bin\Debug\SSLGet.exe
+C:\GitHub\External\CurlSharp-master\Samples\SSLGet\bin\Debug\SSLGet.pdb
+C:\GitHub\External\CurlSharp-master\Samples\SSLGet\bin\Debug\CurlSharp.dll
+C:\GitHub\External\CurlSharp-master\Samples\SSLGet\bin\Debug\CurlSharp.pdb
+C:\GitHub\External\CurlSharp-master\Samples\SSLGet\obj\Debug\SSLGet.exe
+C:\GitHub\External\CurlSharp-master\Samples\SSLGet\obj\Debug\SSLGet.pdb

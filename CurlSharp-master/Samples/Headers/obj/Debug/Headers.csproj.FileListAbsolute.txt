@@ -1,0 +1,6 @@
+C:\GitHub\External\CurlSharp-master\Samples\Headers\bin\Debug\Headers.exe
+C:\GitHub\External\CurlSharp-master\Samples\Headers\bin\Debug\Headers.pdb
+C:\GitHub\External\CurlSharp-master\Samples\Headers\bin\Debug\CurlSharp.dll
+C:\GitHub\External\CurlSharp-master\Samples\Headers\bin\Debug\CurlSharp.pdb
+C:\GitHub\External\CurlSharp-master\Samples\Headers\obj\Debug\Headers.exe
+C:\GitHub\External\CurlSharp-master\Samples\Headers\obj\Debug\Headers.pdb
