@@ -3,3 +3,8 @@ C:\GitHub\External\SQLQueryGenerator\bin\Debug\SQLQueryGenerator.pdb
 C:\GitHub\External\SQLQueryGenerator\obj\Debug\SQLQueryGenerator.csprojResolveAssemblyReference.cache
 C:\GitHub\External\SQLQueryGenerator\obj\Debug\SQLQueryGenerator.dll
 C:\GitHub\External\SQLQueryGenerator\obj\Debug\SQLQueryGenerator.pdb
+D:\GitHub\External\SQLQueryGenerator\bin\Debug\SQLQueryGenerator.dll
+D:\GitHub\External\SQLQueryGenerator\bin\Debug\SQLQueryGenerator.pdb
+D:\GitHub\External\SQLQueryGenerator\obj\Debug\SQLQueryGenerator.csprojResolveAssemblyReference.cache
+D:\GitHub\External\SQLQueryGenerator\obj\Debug\SQLQueryGenerator.dll
+D:\GitHub\External\SQLQueryGenerator\obj\Debug\SQLQueryGenerator.pdb

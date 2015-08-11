@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace SQLQueryGenerator.QueryParameters
 {
-    public class QueryField : IQueryField
+    public class QueryField<T> : IQueryField
     {
         public string Expression { get; set; }
         public string Alias { get; set; }
-        public bool IsSelect { get; set; }
     }
 }
