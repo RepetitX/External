@@ -11,12 +11,12 @@ namespace SQLQueryGenerator.QueryParameters
 
     public class JoinedTable
     {
-        public Table OuterTable { get; set; }
+        public IQueryTable OuterTable { get; set; }
         public string InnerKey { get; set; }
         public string OuterKey { get; set; }
         public JoinType Type { get; set; }
 
-        public JoinedTable(JoinType Type, Table OuterTable, string InnerKey, string OuterKey)
+        public JoinedTable(JoinType Type, IQueryTable OuterTable, string InnerKey, string OuterKey)
         {
             this.OuterTable = OuterTable;
             this.InnerKey = InnerKey;
