@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SQLQueryGenerator.QueryParameters
 {
@@ -10,5 +6,19 @@ namespace SQLQueryGenerator.QueryParameters
     {
         public string Expression { get; set; }
         public string Alias { get; set; }
+
+        public QueryField(string Expression, string Alias)
+        {
+        }
+
+        public string GetTypeName()
+        {
+            return typeof (T).ToString();
+        }
+
+        public string GetQueryPart()
+        {
+            return Expression;
+        }
     }
 }
