@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries\SelectQuery.cs" />
     <Compile Include="Queries\SubQuery.cs" />
@@ -52,7 +53,10 @@
     <Compile Include="QueryParameters\JoinedTable.cs" />
     <Compile Include="QueryParameters\QueryCondition.cs" />
     <Compile Include="QueryParameters\QueryField.cs" />
-    <Compile Include="QueryParameters\Table.cs" />
+    <Compile Include="QueryParameters\QueryTable.cs" />
+    <Compile Include="QueryParameters\SortingField.cs" />
+    <Compile Include="QueryParameters\SortDirection.cs" />
+    <Compile Include="QueryParameters\StringQueryField.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

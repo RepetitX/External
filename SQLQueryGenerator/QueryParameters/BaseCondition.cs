@@ -16,6 +16,8 @@ namespace SQLQueryGenerator.QueryParameters
     {
         protected string queryPart;
 
+        public IQueryField Field { get; private set; }
+
         protected BaseCondition()
         {
             queryPart = "";
@@ -23,6 +25,7 @@ namespace SQLQueryGenerator.QueryParameters
 
         public BaseCondition(IQueryField Field, NullCondition Condition)
         {
+            this.Field = Field;
             queryPart = string.Format("{0} is {1}null", Field.GetQueryPart(),
                 Condition == NullCondition.IsNull ? "" : "not ");
         }
