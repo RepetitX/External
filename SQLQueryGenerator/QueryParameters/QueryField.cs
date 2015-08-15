@@ -1,15 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SQLQueryGenerator.QueryParameters
 {
-    public class QueryField : IQueryField
+    public class QueryField<T> : IQueryField where T : struct 
     {
         public string Expression { get; set; }
         public string Alias { get; set; }
-        public bool IsSelect { get; set; }
+
+        public QueryField(string Expression, string Alias)
+        {
+        }
+
+        public string GetTypeName()
+        {
+            return typeof (T).ToString();
+        }
+
+        public string GetQueryPart()
+        {
+            return Expression;
+        }
     }
 }
