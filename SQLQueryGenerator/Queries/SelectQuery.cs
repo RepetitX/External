@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using SQLQueryGenerator.QueryParameters;
 
@@ -14,6 +15,11 @@ namespace SQLQueryGenerator.Queries
         protected Dictionary<string, SortDirection> sortingFields;
 
         public ConditionGroup RootCondition { get; private set; }
+
+        public List<IQueryField> GetSelectFields()
+        {
+            return selectFields.Select(alias => fieldsContainer.GetField(alias)).ToList();
+        }
 
         public bool Distinct { get; set; }
 
