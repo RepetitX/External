@@ -8,19 +8,27 @@ namespace SQLQueryGenerator.Queries
     public class SelectQuery
     {
         protected Dictionary<string, IQueryTable> tables;
-        protected Dictionary<string, IQueryField> fields;
+        protected QueryFieldsContainer fieldsContainer;
 
         protected List<string> selectFields;
-        protected List<SortingField> sortingFields;
-        protected List<IQueryCondition> conditions;
+        protected Dictionary<string, SortDirection> sortingFields;
+
+        public ConditionGroup RootCondition { get; private set; }
+
+        public bool Distinct { get; set; }
 
         public SelectQuery()
+            : this(ConditionGroupType.And)
+        {
+        }
+
+        public SelectQuery(ConditionGroupType RootConditionsType)
         {
             tables = new Dictionary<string, IQueryTable>();
-            fields = new Dictionary<string, IQueryField>();
+            fieldsContainer = new QueryFieldsContainer();
             selectFields = new List<string>();
-            sortingFields = new List<SortingField>();
-            conditions = new List<IQueryCondition>();
+            sortingFields = new Dictionary<string, SortDirection>();
+            RootCondition = new ConditionGroup(RootConditionsType, fieldsContainer);
         }
 
         public void AddTable(IQueryTable Table)
@@ -35,47 +43,27 @@ namespace SQLQueryGenerator.Queries
             return table;
         }
 
-        public void AddCondition(IQueryCondition Condition)
-        {
-            conditions.Add(Condition);
-        }
-
         public void AddSortingField(IQueryField Field, SortDirection Direction)
         {
-            SortingField sField = new SortingField(Field, Direction);
-            AddField(Field);
+            fieldsContainer.AddField(Field);
 
-            sortingFields.Add(sField);
+            sortingFields.Add(Field.Alias, Direction);
         }
         public void AddSortingField(string Alias, SortDirection Direction)
         {
-            IQueryField field = GetField(Alias);
-            SortingField sField = new SortingField(field, Direction);
+            IQueryField field = fieldsContainer.GetField(Alias);
 
-            sortingFields.Add(sField);
+            sortingFields.Add(Alias, Direction);
         }
-
-        protected IQueryField GetField(string Alias)
+        public void AddSelectField(IQueryField Field)
         {
-            IQueryField field;
-            if (!fields.ContainsKey(Alias))
-            {
-                field = new StringQueryField(Alias, Alias);
-                AddField(field);
-            }
-            else
-            {
-                field = fields[Alias];
-            }
-            return field;
+            fieldsContainer.AddField(Field);
+            selectFields.Add(Field.Alias);
         }
-
-        public void AddField(IQueryField Field)
+        public void AddSelectField(string Alias)
         {
-            if (!fields.ContainsKey(Field.Alias))
-            {
-                fields.Add(Field.Alias, Field);
-            }
+            IQueryField field = fieldsContainer.GetField(Alias);
+            selectFields.Add(field.Alias);
         }
 
         public string GetQueryString()
@@ -83,6 +71,10 @@ namespace SQLQueryGenerator.Queries
             StringBuilder queryString = new StringBuilder();
 
             queryString.Append("select ");
+            if (Distinct)
+            {
+                queryString.Append("distinct ");
+            }
 
             if (selectFields.Count > 0)
             {
@@ -100,20 +92,39 @@ namespace SQLQueryGenerator.Queries
                 string.Join(", ", tables.Select(pair => pair.Value.GetQueryPart()))
                 );
 
+            string conditions = RootCondition.GetQueryPart();
+            if (!string.IsNullOrWhiteSpace(conditions))
+            {
+                queryString.AppendFormat("\nwhere {0}", conditions);
+            }
+            if (sortingFields.Count > 0)
+            {
+                queryString.AppendFormat("\norder by {0}",
+                    string.Join("\n,", sortingFields.Select(GetSortingField)));
+            }
+
             return queryString.ToString();
         }
 
-        protected string GetSelectField(string FieldName)
+        protected string GetSelectField(string Alias)
         {
-            IQueryField field = fields[FieldName];
+            IQueryField field = fieldsContainer.GetField(Alias);
             if (field.Expression == field.Alias)
             {
-                return FieldName;
+                return Alias;
             }
             else
             {
                 return string.Format("{0} as {1}", field.Expression, field.Alias);
             }
+        }
+        protected string GetSortingField(KeyValuePair<string, SortDirection> SortingField)
+        {
+            IQueryField field = fieldsContainer.GetField(SortingField.Key);
+
+            return string.Format("{0} {1}",
+                selectFields.Contains(field.Alias) ? field.Alias : field.Expression,
+                SortingField.Value == SortDirection.Ascending ? "asc" : "desc");
         }
     }
 }
