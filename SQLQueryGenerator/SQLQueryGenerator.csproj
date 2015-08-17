@@ -46,6 +46,7 @@
     <Compile Include="Queries\SubQuery.cs" />
     <Compile Include="QueryParameters\BaseCondition.cs" />
     <Compile Include="QueryParameters\ConditionGroup.cs" />
+    <Compile Include="QueryParameters\CustomCondition.cs" />
     <Compile Include="QueryParameters\IQueryCondition.cs" />
     <Compile Include="QueryParameters\IQueryField.cs" />
     <Compile Include="QueryParameters\IQueryPart.cs" />
@@ -53,8 +54,8 @@
     <Compile Include="QueryParameters\JoinedTable.cs" />
     <Compile Include="QueryParameters\QueryCondition.cs" />
     <Compile Include="QueryParameters\QueryField.cs" />
+    <Compile Include="QueryParameters\QueryFieldsContainer.cs" />
     <Compile Include="QueryParameters\QueryTable.cs" />
-    <Compile Include="QueryParameters\SortingField.cs" />
     <Compile Include="QueryParameters\SortDirection.cs" />
     <Compile Include="QueryParameters\StringQueryField.cs" />
   </ItemGroup>

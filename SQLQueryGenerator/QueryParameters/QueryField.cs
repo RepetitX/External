@@ -9,6 +9,12 @@ namespace SQLQueryGenerator.QueryParameters
 
         public QueryField(string Expression, string Alias)
         {
+            this.Expression = Expression;
+            this.Alias = Alias;               
+        }
+        public QueryField(string Expression)
+            : this(Expression, Expression)
+        {
         }
 
         public string GetTypeName()

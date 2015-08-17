@@ -1,6 +1,7 @@
 ﻿
 using System;
 using SQLQueryGenerator.Extensions;
+using System.Collections.Generic;
 
 namespace SQLQueryGenerator.QueryParameters
 {
@@ -22,7 +23,7 @@ namespace SQLQueryGenerator.QueryParameters
 
     public class QueryCondition<T> : BaseCondition where T : struct
     {
-        public QueryCondition(QueryField<T> Field, CompareCondition Condition, T? Value)
+        public QueryCondition(QueryField<T> Field, CompareCondition Comparsion, T? Value)
         {
             if (!Value.HasValue)
             {
@@ -30,7 +31,21 @@ namespace SQLQueryGenerator.QueryParameters
                 return;
             }
 
-            queryPart = String.Format("{0} {1} {2}", Field.GetQueryPart(), Condition.GetSign(), Value.Value);
+            queryPart = String.Format("{0} {1} {2}", Field.GetQueryPart(), Comparsion.GetSign(), Value.Value);
         }
-    }
+        public QueryCondition(QueryField<T> Field, ListCondition Condition, IEnumerable<T> Values)
+        {
+            string values = string.Join(", ", Values);
+
+            if (String.IsNullOrWhiteSpace(values))
+            {
+                queryPart = "";
+            }
+            else
+            {
+                queryPart = String.Format("{0} {1} ({2})", Field.GetQueryPart(),
+                    Condition == ListCondition.In ? "in" : "not in", values);
+            }
+        }
+    }    
 }

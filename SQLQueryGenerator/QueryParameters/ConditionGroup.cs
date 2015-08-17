@@ -13,19 +13,28 @@ namespace SQLQueryGenerator.QueryParameters
 
     public class ConditionGroup : IQueryCondition
     {
-        protected ConditionGroupType type;
-        protected List<IQueryCondition> conditions;
+        public ConditionGroupType Type { get; set; }
 
-        public ConditionGroup(ConditionGroupType Type)
+        protected List<IQueryCondition> conditions;        
+        protected QueryFieldsContainer fieldsContainer;
+
+        public ConditionGroup(ConditionGroupType Type, QueryFieldsContainer FieldsContainer)
         {
-            type = Type;
+            this.Type = Type;
             conditions = new List<IQueryCondition>();
+            fieldsContainer = FieldsContainer;
         }
 
         public void AddCondition(IQueryCondition Condition)
         {
             conditions.Add(Condition);
         }
+        public void AddCondition<T>(string FieldName, CompareCondition Comparsion, T? Value) where T : struct
+        {
+            QueryField<T> field = (QueryField<T>)fieldsContainer.GetQueryField<T>(FieldName);
+            conditions.Add(new QueryCondition<T>(field, Comparsion, Value));
+        }
+
 
         public string GetQueryPart()
         {
