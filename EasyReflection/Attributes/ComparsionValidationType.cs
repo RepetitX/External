@@ -1,6 +1,6 @@
 ﻿namespace EasyReflection.Attributes
 {
-    public enum PropertyValidationType
+    public enum ComparsionValidationType
     {
         Less,
         LessOrEqual,
