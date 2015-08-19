@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace EasyReflection
 {
     public class ReflectionHelper
     {
-        public static object GetPropertyValue(string PropertyName, Object Object)
+        public static object GetPropertyValue(string PropertyName, object Object)
         {
             if (string.IsNullOrWhiteSpace(PropertyName))
             {
@@ -40,6 +38,111 @@ namespace EasyReflection
                 return GetPropertyValue(regex.Replace(PropertyName, ""), val);
             }
             return val;
+        }
+
+        public static IEnumerable GetAllPropertyValues(string PropertyName, object Object)
+        {
+            if (string.IsNullOrWhiteSpace(PropertyName))
+            {
+                yield return null;
+                yield break;
+            }
+            object val = GetFirstPropertyValue(ref PropertyName, Object);
+
+            if (val == null)
+            {
+                yield return null;
+                yield break;
+            }
+
+            if (string.IsNullOrWhiteSpace(PropertyName))
+            {
+                //Дошли до конца
+                if (val is IEnumerable)
+                {
+                    foreach (var obj in val as IEnumerable)
+                    {
+                        yield return obj;
+                    }
+                }
+                else
+                {
+                    yield return val;
+                }
+            }
+            else
+            {
+                if (val is IEnumerable)
+                {
+                    foreach (var obj in val as IEnumerable)
+                    {
+                        IEnumerable values = GetAllPropertyValues(PropertyName, obj);
+                        foreach (var val2 in values)
+                        {
+                            yield return val2;
+                        }
+                    }
+                }
+                else
+                {
+                    IEnumerable values = GetAllPropertyValues(PropertyName, val);
+                    foreach (var val2 in values)
+                    {
+                        yield return val2;
+                    }
+                }
+            }
+        }
+
+        protected static object GetFirstPropertyValue(ref string PropertyName, object Object)
+        {
+            if (string.IsNullOrWhiteSpace(PropertyName))
+            {
+                return null;
+            }            
+            string[] nameParts = PropertyName.Split('.');
+            string name = nameParts[0];
+            object result;
+
+            //Обрабатываем массивы и коллекции
+            //TODO Добавить поддержку нецелочисленных индексов
+            Regex regex = new Regex(@"\[(?<index>\d*)\]");
+            Match match = regex.Match(name);
+
+            string index = null;
+            
+            if (match.Success)
+            {
+                //Это коллекция
+                name = regex.Replace(name, "");
+                index = match.Groups["index"].Value;
+                
+            }
+            PropertyInfo property = Object.GetType().GetProperty(name);
+            
+            if (property == null)
+            {
+                //Дальше идти некуда
+                PropertyName = "";
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(index))
+            {
+                //Возвращаем объект или всю коллекцию
+                result = property.GetValue(Object, null);
+            }
+            else
+            {
+                //возвращаем элемент
+                result = property.GetValue(Object, new object[] {int.Parse(index)});
+            }
+            //Убираем использованную часть PropertyName
+
+            PropertyName = string.Join(".",
+                nameParts.Where((part, ind) => ind > 0));                
+
+            return result;
         }
     }
 }

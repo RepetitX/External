@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using EasyReflection.Attributes;
 using System.Collections;
+using System.Linq;
 
 namespace EasyReflection.Validation
 {
@@ -93,9 +94,27 @@ namespace EasyReflection.Validation
          protected bool CheckPropertyByContainsAttribute(object ValidationPropertyValue, ContainsValidationAttribute Attribute,
             object Object)
         {
-            object objectPropertyValue = ReflectionHelper.GetPropertyValue(Attribute.TargetPropertyName, Object);
+            //object objectPropertyValue = ReflectionHelper.GetPropertyValue(Attribute.TargetPropertyName, Object);
 
-             if(!(objectPropertyValue is IEnumerable))
+             IEnumerable objectPropertyValues = ReflectionHelper.GetAllPropertyValues(Attribute.TargetPropertyName,
+                 Object);
+             if (ValidationPropertyValue is IEnumerable)
+             {
+                 foreach (var val in ValidationPropertyValue as IEnumerable)
+                 {
+                     if (!objectPropertyValues.Cast<object>().Contains(val))
+                     {
+                         return false;
+                     }                     
+                 }
+                 return true;
+             }
+             else
+             {
+                 return objectPropertyValues.Cast<object>().Contains(ValidationPropertyValue);
+             }
+
+             /*if(!(objectPropertyValue is IEnumerable))
              {
                  //Не содержит
                  return false;
@@ -119,8 +138,7 @@ namespace EasyReflection.Validation
                          return true;
                      }
                  }
-             }
-             return false;
+             }*/
         }
 
         protected bool CheckPropertyByComparsionAttribute(object ValidationPropertyValue, ComparsionValidationAttribute Attribute,
