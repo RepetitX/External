@@ -37,7 +37,7 @@ namespace SQLQueryGenerator.QueryParameters
 
         public void AddCondition<T>(string FieldName, CompareCondition Comparsion, T? Value) where T : struct
         {
-            QueryField<T> field = (QueryField<T>) fieldsContainer.GetQueryField<T>(FieldName);
+            QueryField<T> field = fieldsContainer.GetQueryField<T>(FieldName);
             conditions.Add(new QueryCondition<T>(field, Comparsion, Value));
         }
 

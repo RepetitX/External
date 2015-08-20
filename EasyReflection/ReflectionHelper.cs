@@ -9,34 +9,22 @@ namespace EasyReflection
 {
     public class ReflectionHelper
     {
-        public static object GetMemberValue(string PropertyName, object Object)
+        public static object GetMemberValue(string MemberName, object Object)
         {
-            if (string.IsNullOrWhiteSpace(PropertyName))
+            if (string.IsNullOrWhiteSpace(MemberName))
             {
                 return null;
             }
-            //Если свойства типа Object.Property1.Property2...
-            string[] propertyNameParts = PropertyName.Split('.');
-            string propName = propertyNameParts[0];
-
-            //Проверяем, есть ли такое свойство
-            PropertyInfo prop = Object.GetType().GetProperty(propName);
-            if (prop == null)
-            {
-                return null;
-            }
-            object val = prop.GetValue(Object, null);
+            object val = GetFirstMemberValue(ref MemberName, Object);
             if (val == null)
             {
                 //Дальше искать нечего
                 return null;
             }
 
-            if (propertyNameParts.Length > 1)
+            if (!string.IsNullOrWhiteSpace(MemberName))
             {
-                //Убираем первое свойство из названия
-                Regex regex = new Regex(String.Format(@"^{0}\.", propName));
-                return GetMemberValue(regex.Replace(PropertyName, ""), val);
+                return GetMemberValue(MemberName, val);
             }
             return val;
         }

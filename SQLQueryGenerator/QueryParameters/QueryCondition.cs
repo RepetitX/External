@@ -30,9 +30,20 @@ namespace SQLQueryGenerator.QueryParameters
                 queryPart = "";
                 return;
             }
+            string value;
+            switch (typeof (T).Name)
+            {
+                case "Boolean":
+                    value = Value.Value.Equals(true) ? "1" : "0";
+                    break;
+                default:
+                    value = Value.Value.ToString();
+                    break;
+            }
 
-            queryPart = String.Format("({0} {1} {2})", Field.GetQueryPart(), Comparsion.GetSign(), Value.Value);
+            queryPart = string.Format("({0} {1} {2})", Field.GetQueryPart(), Comparsion.GetSign(), value);
         }
+
         public QueryCondition(QueryField<T> Field, ListCondition Condition, IEnumerable<T> Values)
         {
             string values = string.Join(", ", Values);
