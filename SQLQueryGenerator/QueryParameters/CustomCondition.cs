@@ -12,11 +12,18 @@ namespace SQLQueryGenerator.QueryParameters
         public CustomCondition(string Expression)
         {
             expression = Expression;
+            if (!string.IsNullOrWhiteSpace(expression))
+            {
+                IsEmpty = false;
+            }
         }
 
         public string GetQueryPart()
         {
             return expression;
         }
+
+        public bool IsEmpty { get; private set; }
+        
     }
 }

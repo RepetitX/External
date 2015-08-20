@@ -1,24 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using EasyReflection.Attributes;
-using System.Collections;
-using System.Linq;
 
 namespace EasyReflection.Validation
 {
     public class CustomObjectValidator : BaseValidator
     {
         protected object validationObject;
+        protected string memberValidationComments;
 
         public string ValidationMessage { get; set; }
 
         public CustomObjectValidator(object ValidationObject)
-            : base()
         {
             validationObject = ValidationObject;
-            this.ValidationMessage = "Неправильно заполнены поля :";
+            ValidationMessage = "Неправильно заполнены поля :";
         }
 
         public CustomObjectValidator(object ValidationObject, string ValidationMessage)
@@ -51,10 +50,7 @@ namespace EasyReflection.Validation
             {
                 return string.Format("{0} {1}", ValidationMessage, string.Join(", ", ValidationErrors));
             }
-            else
-            {
-                return "";
-            }
+            return "";
         }
 
         protected bool CheckProperty(PropertyInfo ValidationProperty, object Object)
@@ -85,66 +81,60 @@ namespace EasyReflection.Validation
                 }
                 if (!result)
                 {
-                    ValidationErrors.Add(attr.DisplayName);
+                    
+                    if (Verbose && !string.IsNullOrEmpty(memberValidationComments))
+                    {
+                        ValidationErrors.Add(string.Format("{0}({1})", attr.DisplayName, memberValidationComments));
+                        memberValidationComments = "";
+                    }
+                    else
+                    {
+                        ValidationErrors.Add(attr.DisplayName);
+                    }
                 }
             }
             
             return result;
         }
-         protected bool CheckPropertyByContainsAttribute(object ValidationPropertyValue, ContainsValidationAttribute Attribute,
+
+        protected bool CheckPropertyByContainsAttribute(object ValidationPropertyValue,
+            ContainsValidationAttribute Attribute,
             object Object)
         {
             //object objectPropertyValue = ReflectionHelper.GetPropertyValue(Attribute.TargetPropertyName, Object);
 
-             IEnumerable objectPropertyValues = ReflectionHelper.GetAllPropertyValues(Attribute.TargetPropertyName,
-                 Object);
-             if (ValidationPropertyValue is IEnumerable)
-             {
-                 foreach (var val in ValidationPropertyValue as IEnumerable)
-                 {
-                     if (!objectPropertyValues.Cast<object>().Contains(val))
-                     {
-                         return false;
-                     }                     
-                 }
-                 return true;
-             }
-             else
-             {
-                 return objectPropertyValues.Cast<object>().Contains(ValidationPropertyValue);
-             }
+            IEnumerable objectPropertyValues = ReflectionHelper.GetAllMemberValues(Attribute.TargetMemberName,
+                Object);
+            var values = objectPropertyValues.Cast<object>().ToArray();
 
-             /*if(!(objectPropertyValue is IEnumerable))
-             {
-                 //Не содержит
-                 return false;
-             }
-             foreach (object obj in (IEnumerable)objectPropertyValue)
-             {
-                 if(string.IsNullOrWhiteSpace(Attribute.InnerPropertyName))
-                 {
-                     //Проверяем сам объект
-                     if(obj.Equals(ValidationPropertyValue))
-                     {
-                         return true;
-                     }
-                 }
-                 else
-                 {
-                     //Проверяем его свойство
-                     object innerPropertyValue = ReflectionHelper.GetPropertyValue(Attribute.InnerPropertyName, obj);
-                     if (innerPropertyValue != null && innerPropertyValue.Equals(ValidationPropertyValue))
-                     {
-                         return true;
-                     }
-                 }
-             }*/
+            if (ValidationPropertyValue is IEnumerable)
+            {
+                foreach (var val in ValidationPropertyValue as IEnumerable)
+                {
+                    if (!values.Contains(val))
+                    {
+                        //не содержит
+                        memberValidationComments = string.Format("[{0}] не содержит [{1}]",
+                            string.Join(", ", values), val);
+                        return false;
+                    }
+                }
+                return true;
+            }
+            if (values.Contains(ValidationPropertyValue))
+            {
+                return true;
+            }
+            memberValidationComments = string.Format("[{0}] не содержит {1}",
+                string.Join(", ", values), ValidationPropertyValue);
+            return false;
         }
 
-        protected bool CheckPropertyByComparsionAttribute(object ValidationPropertyValue, ComparsionValidationAttribute Attribute,
+        protected bool CheckPropertyByComparsionAttribute(object ValidationPropertyValue,
+            ComparsionValidationAttribute Attribute,
             object Object)
         {
-            object objectPropertyValue = ReflectionHelper.GetPropertyValue(Attribute.TargetPropertyName, Object);
+            object objectPropertyValue = ReflectionHelper.GetMemberValue(Attribute.TargetMemberName, Object);
 
             switch (Attribute.Type)
             {
@@ -156,33 +146,70 @@ namespace EasyReflection.Validation
                 case ComparsionValidationType.NotEqual:
                     if (objectPropertyValue is IComparable && ValidationPropertyValue is IComparable)
                     {
-                        return GetComparsionResult((IComparable)objectPropertyValue, (IComparable)ValidationPropertyValue,
+                        return GetComparsionResult((IComparable) objectPropertyValue,
+                            (IComparable) ValidationPropertyValue,
                             Attribute.Type);
                     }
                     return true;
+                case ComparsionValidationType.IsIn:
+                    bool result;
+                    if (ValidationPropertyValue is IEnumerable)
+                    {
+                        result = ((IEnumerable) ValidationPropertyValue).Cast<object>().Contains(objectPropertyValue);
+                        if (!result)
+                        {
+                            memberValidationComments = string.Format("{0} не содержится в [{1}]", objectPropertyValue,
+                                string.Join(", ", ((IEnumerable) ValidationPropertyValue).Cast<object>()));
+                        }
+                    }
+                    else
+                    {
+                        result = objectPropertyValue.Equals(ValidationPropertyValue);
+                        if (!result)
+                        {
+                            memberValidationComments = string.Format("{0} не равно {1}", objectPropertyValue,
+                                ValidationPropertyValue);
+                        }
+                    }
+                    return result;
             }
             return true;
         }
 
-        protected bool GetComparsionResult(IComparable ObjectValue, IComparable FilterValue, ComparsionValidationType Type)
+        protected bool GetComparsionResult(IComparable ObjectValue, IComparable FilterValue,
+            ComparsionValidationType Type)
         {
+            bool result;
             switch (Type)
             {
                 case ComparsionValidationType.Equal:
-                    return ObjectValue.CompareTo(FilterValue) != 0;
+                    result = ObjectValue.CompareTo(FilterValue) == 0;
+                    break;
                 case ComparsionValidationType.LessOrEqual:
-                    return ObjectValue.CompareTo(FilterValue) <= 0;
+                    result = ObjectValue.CompareTo(FilterValue) <= 0;
+                    break;
                 case ComparsionValidationType.Less:
-                    return ObjectValue.CompareTo(FilterValue) < 0;
+                    result = ObjectValue.CompareTo(FilterValue) < 0;
+                    break;
                 case ComparsionValidationType.MoreOrEqual:
-                    return ObjectValue.CompareTo(FilterValue) >= 0;
+                    result = ObjectValue.CompareTo(FilterValue) >= 0;
+                    break;
                 case ComparsionValidationType.More:
-                    return ObjectValue.CompareTo(FilterValue) > 0;
+                    result = ObjectValue.CompareTo(FilterValue) > 0;
+                    break;
                 case ComparsionValidationType.NotEqual:
-                    return ObjectValue.CompareTo(FilterValue) != 0;
+                    result = ObjectValue.CompareTo(FilterValue) != 0;
+                    break;
                 default:
-                    return false;
+                    result = false;
+                    break;
             }
+            if (result)
+            {
+                return true;
+            }
+            memberValidationComments = string.Format("{0} не соответствует {1}", ObjectValue, FilterValue);
+            return false;
         }
     }
 }

@@ -2,13 +2,14 @@
 using System.Collections;
 using System.Linq;
 using System.Reflection;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 
 namespace EasyReflection
 {
     public class ReflectionHelper
     {
-        public static object GetPropertyValue(string PropertyName, object Object)
+        public static object GetMemberValue(string PropertyName, object Object)
         {
             if (string.IsNullOrWhiteSpace(PropertyName))
             {
@@ -35,19 +36,19 @@ namespace EasyReflection
             {
                 //Убираем первое свойство из названия
                 Regex regex = new Regex(String.Format(@"^{0}\.", propName));
-                return GetPropertyValue(regex.Replace(PropertyName, ""), val);
+                return GetMemberValue(regex.Replace(PropertyName, ""), val);
             }
             return val;
         }
 
-        public static IEnumerable GetAllPropertyValues(string PropertyName, object Object)
+        public static IEnumerable GetAllMemberValues(string MemberName, object Object)
         {
-            if (string.IsNullOrWhiteSpace(PropertyName))
+            if (string.IsNullOrWhiteSpace(MemberName))
             {
                 yield return null;
                 yield break;
             }
-            object val = GetFirstPropertyValue(ref PropertyName, Object);
+            object val = GetFirstMemberValue(ref MemberName, Object);
 
             if (val == null)
             {
@@ -55,7 +56,7 @@ namespace EasyReflection
                 yield break;
             }
 
-            if (string.IsNullOrWhiteSpace(PropertyName))
+            if (string.IsNullOrWhiteSpace(MemberName))
             {
                 //Дошли до конца
                 if (val is IEnumerable)
@@ -76,7 +77,7 @@ namespace EasyReflection
                 {
                     foreach (var obj in val as IEnumerable)
                     {
-                        IEnumerable values = GetAllPropertyValues(PropertyName, obj);
+                        IEnumerable values = GetAllMemberValues(MemberName, obj);
                         foreach (var val2 in values)
                         {
                             yield return val2;
@@ -85,7 +86,7 @@ namespace EasyReflection
                 }
                 else
                 {
-                    IEnumerable values = GetAllPropertyValues(PropertyName, val);
+                    IEnumerable values = GetAllMemberValues(MemberName, val);
                     foreach (var val2 in values)
                     {
                         yield return val2;
@@ -94,55 +95,87 @@ namespace EasyReflection
             }
         }
 
-        protected static object GetFirstPropertyValue(ref string PropertyName, object Object)
+        protected static object GetFirstMemberValue(ref string MemberName, object Object)
         {
-            if (string.IsNullOrWhiteSpace(PropertyName))
+            if (string.IsNullOrWhiteSpace(MemberName))
             {
                 return null;
-            }            
-            string[] nameParts = PropertyName.Split('.');
+            }
+            string[] nameParts = MemberName.Split('.');
             string name = nameParts[0];
             object result;
 
+            Regex regexMethod = new Regex(@"\(\)");
+            Match matchMethod = regexMethod.Match(name);
+
+            if (matchMethod.Success)
+            {
+                //Метод
+                result = GetMethodValue(regexMethod.Replace(name, ""), Object);
+            }
+            else
+            {
+                result = GetPropertyValue(name, Object);
+            }
+            if (result == null)
+            {
+                //Дальше не двигаемся
+                MemberName = "";
+            }
+            else
+            {
+                //Убираем использованную часть PropertyName
+                MemberName = string.Join(".",
+                    nameParts.Where((part, ind) => ind > 0));
+            }
+            return result;
+        }
+
+        protected static object GetPropertyValue(string Name, object Object)
+        {
             //Обрабатываем массивы и коллекции
             //TODO Добавить поддержку нецелочисленных индексов
-            Regex regex = new Regex(@"\[(?<index>\d*)\]");
-            Match match = regex.Match(name);
+            Regex regexArray = new Regex(@"\[(?<index>\d*)\]");
+            Match matchArray = regexArray.Match(Name);
 
             string index = null;
-            
-            if (match.Success)
+
+            if (matchArray.Success)
             {
                 //Это коллекция
-                name = regex.Replace(name, "");
-                index = match.Groups["index"].Value;
-                
+                Name = regexArray.Replace(Name, "");
+                index = matchArray.Groups["index"].Value;
             }
-            PropertyInfo property = Object.GetType().GetProperty(name);
-            
+            PropertyInfo property = Object.GetType().GetProperty(Name);
+
             if (property == null)
             {
                 //Дальше идти некуда
-                PropertyName = "";
                 return null;
             }
 
             if (string.IsNullOrWhiteSpace(index))
             {
                 //Возвращаем объект или всю коллекцию
-                result = property.GetValue(Object, null);
+                return property.GetValue(Object, null);
             }
             else
             {
                 //возвращаем элемент
-                result = property.GetValue(Object, new object[] {int.Parse(index)});
+                return property.GetValue(Object, new object[] {int.Parse(index)});
             }
-            //Убираем использованную часть PropertyName
+        }
 
-            PropertyName = string.Join(".",
-                nameParts.Where((part, ind) => ind > 0));                
+        protected static object GetMethodValue(string Name, object Object)
+        {
+            //TODO добавить параметры
+            MethodInfo method = Object.GetType().GetMethod(Name);
 
-            return result;
+            if (method == null)
+            {
+                return null;
+            }
+            return method.Invoke(Object, null);
         }
     }
 }

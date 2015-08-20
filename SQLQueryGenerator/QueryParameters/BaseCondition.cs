@@ -34,5 +34,10 @@ namespace SQLQueryGenerator.QueryParameters
         {
             return queryPart;
         }
+
+        public bool IsEmpty
+        {
+            get { return string.IsNullOrWhiteSpace(queryPart); }
+        }
     }
 }

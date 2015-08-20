@@ -7,6 +7,7 @@
         Equal,
         MoreOrEqual,
         More,
-        NotEqual
+        NotEqual,
+        IsIn
     }
 }

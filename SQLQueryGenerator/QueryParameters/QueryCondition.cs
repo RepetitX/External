@@ -31,7 +31,7 @@ namespace SQLQueryGenerator.QueryParameters
                 return;
             }
 
-            queryPart = String.Format("{0} {1} {2}", Field.GetQueryPart(), Comparsion.GetSign(), Value.Value);
+            queryPart = String.Format("({0} {1} {2})", Field.GetQueryPart(), Comparsion.GetSign(), Value.Value);
         }
         public QueryCondition(QueryField<T> Field, ListCondition Condition, IEnumerable<T> Values)
         {

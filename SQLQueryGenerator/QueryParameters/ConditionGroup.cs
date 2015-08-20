@@ -7,7 +7,7 @@ namespace SQLQueryGenerator.QueryParameters
 {
     public enum ConditionGroupType
     {
-        And, 
+        And,
         Or
     }
 
@@ -15,8 +15,13 @@ namespace SQLQueryGenerator.QueryParameters
     {
         public ConditionGroupType Type { get; set; }
 
-        protected List<IQueryCondition> conditions;        
+        protected List<IQueryCondition> conditions;
         protected QueryFieldsContainer fieldsContainer;
+
+        public bool IsEmpty
+        {
+            get { return conditions.All(cnd => cnd.IsEmpty); }
+        }
 
         public ConditionGroup(ConditionGroupType Type, QueryFieldsContainer FieldsContainer)
         {
@@ -29,16 +34,18 @@ namespace SQLQueryGenerator.QueryParameters
         {
             conditions.Add(Condition);
         }
+
         public void AddCondition<T>(string FieldName, CompareCondition Comparsion, T? Value) where T : struct
         {
-            QueryField<T> field = (QueryField<T>)fieldsContainer.GetQueryField<T>(FieldName);
+            QueryField<T> field = (QueryField<T>) fieldsContainer.GetQueryField<T>(FieldName);
             conditions.Add(new QueryCondition<T>(field, Comparsion, Value));
         }
 
 
         public string GetQueryPart()
         {
-            return string.Join("\nand", conditions.Select(cnd => string.Format("({0})", cnd.GetQueryPart())));
+            return string.Join("\nand ",
+                conditions.Where(cnd => !cnd.IsEmpty).Select(cnd => string.Format("{0}", cnd.GetQueryPart())));
         }
     }
 }
