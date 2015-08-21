@@ -6,16 +6,17 @@ using System.Text;
 namespace EasyReflection.Validation
 {
     public abstract class BaseValidator : IValidator
-    {
-        public bool Verbose { get; set; }
-        public List<string> ValidationErrors { get; private set; }
-
-        protected BaseValidator()
-        {
-            ValidationErrors = new List<string>();
-        }
-
+    {        
         public abstract bool Validate(object Object);
-        public abstract string GetValidationResult(object Object);
+        public abstract ValidationResult GetValidationResult(object Object);
+
+        public static bool ValidateMember(ValidationCondition Condition, object Object, string MemberName,
+            out string validationMessage)
+        {
+            //Check conditions
+
+            validationMessage = "";
+            return true;
+        }
     }
 }

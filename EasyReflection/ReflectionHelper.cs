@@ -15,28 +15,30 @@ namespace EasyReflection
             {
                 return null;
             }
-            object val = GetFirstMemberValue(ref MemberName, Object);
+            string newMemberName;
+            object val = GetFirstMemberValue(MemberName, Object, out newMemberName);
             if (val == null)
             {
                 //Дальше искать нечего
                 return null;
             }
 
-            if (!string.IsNullOrWhiteSpace(MemberName))
+            if (!string.IsNullOrWhiteSpace(newMemberName))
             {
-                return GetMemberValue(MemberName, val);
+                return GetMemberValue(newMemberName, val);
             }
             return val;
         }
 
-        public static IEnumerable GetAllMemberValues(string MemberName, object Object)
+        public static IEnumerable GetAllMemberValues(string MemberName, object Object, string[] Conditions = null)
         {
             if (string.IsNullOrWhiteSpace(MemberName))
             {
                 yield return null;
                 yield break;
             }
-            object val = GetFirstMemberValue(ref MemberName, Object);
+            string newMemberName;
+            object val = GetFirstMemberValue(MemberName, Object, out newMemberName);
 
             if (val == null)
             {
@@ -44,7 +46,7 @@ namespace EasyReflection
                 yield break;
             }
 
-            if (string.IsNullOrWhiteSpace(MemberName))
+            if (string.IsNullOrWhiteSpace(newMemberName))
             {
                 //Дошли до конца
                 if (val is IEnumerable)
@@ -65,7 +67,7 @@ namespace EasyReflection
                 {
                     foreach (var obj in val as IEnumerable)
                     {
-                        IEnumerable values = GetAllMemberValues(MemberName, obj);
+                        IEnumerable values = GetAllMemberValues(newMemberName, obj);
                         foreach (var val2 in values)
                         {
                             yield return val2;
@@ -74,7 +76,7 @@ namespace EasyReflection
                 }
                 else
                 {
-                    IEnumerable values = GetAllMemberValues(MemberName, val);
+                    IEnumerable values = GetAllMemberValues(newMemberName, val);
                     foreach (var val2 in values)
                     {
                         yield return val2;
@@ -83,10 +85,11 @@ namespace EasyReflection
             }
         }
 
-        protected static object GetFirstMemberValue(ref string MemberName, object Object)
+        protected static object GetFirstMemberValue(string MemberName, object Object, out string NewMemberName)
         {
             if (string.IsNullOrWhiteSpace(MemberName))
             {
+                NewMemberName = "";
                 return null;
             }
             string[] nameParts = MemberName.Split('.');
@@ -108,12 +111,12 @@ namespace EasyReflection
             if (result == null)
             {
                 //Дальше не двигаемся
-                MemberName = "";
+                NewMemberName = "";
             }
             else
             {
                 //Убираем использованную часть PropertyName
-                MemberName = string.Join(".",
+                NewMemberName = string.Join(".",
                     nameParts.Where((part, ind) => ind > 0));
             }
             return result;

@@ -49,6 +49,9 @@
     <Compile Include="Validation\BaseValidator.cs" />
     <Compile Include="Validation\IValidator.cs" />
     <Compile Include="Validation\CustomObjectValidator.cs" />
+    <Compile Include="Validation\ValidationCondition.cs" />
+    <Compile Include="Validation\ValidationError.cs" />
+    <Compile Include="Validation\ValidationResult.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

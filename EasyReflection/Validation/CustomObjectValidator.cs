@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using EasyReflection.Attributes;
 
 namespace EasyReflection.Validation
@@ -11,20 +11,12 @@ namespace EasyReflection.Validation
     {
         protected object validationObject;
         protected string memberValidationComments;
-
-        public string ValidationMessage { get; set; }
+        protected List<ValidationError> errors;
 
         public CustomObjectValidator(object ValidationObject)
         {
             validationObject = ValidationObject;
-            ValidationMessage = "Неправильно заполнены поля :";
-        }
-
-        public CustomObjectValidator(object ValidationObject, string ValidationMessage)
-            : this(ValidationObject)
-        {
-            this.ValidationMessage = ValidationMessage;
-        }
+        }        
 
         public override bool Validate(object Object)
         {
@@ -39,18 +31,21 @@ namespace EasyReflection.Validation
             return true;
         }
 
-        public override string GetValidationResult(object Object)
+        public override ValidationResult GetValidationResult(object Object)
         {
             var props = validationObject.GetType().GetProperties();
+            errors = new List<ValidationError>();
+
             foreach (PropertyInfo prop in props)
             {
                 CheckProperty(prop, Object);
             }
-            if (ValidationErrors.Count > 0)
+
+            if (errors.Count > 0)
             {
-                return string.Format("{0} {1}", ValidationMessage, string.Join(", ", ValidationErrors));
+                return new ValidationResult(false, errors);
             }
-            return "";
+            return new ValidationResult();
         }
 
         protected bool CheckProperty(PropertyInfo ValidationProperty, object Object)
@@ -61,39 +56,33 @@ namespace EasyReflection.Validation
                 return true;
             }
 
-            var attrs = ValidationProperty.GetCustomAttributes(typeof(BaseValidationAttribute), false);
+            var attrs = ValidationProperty.GetCustomAttributes(typeof (BaseValidationAttribute), false);
             if (attrs.Length == 0)
             {
                 return true;
             }
 
-            bool result = true;//По умолчанию валидация прошла
+            bool result = true; //По умолчанию валидация прошла
 
             foreach (BaseValidationAttribute attr in attrs)
             {
                 if (attr is ComparsionValidationAttribute)
                 {
-                    result = CheckPropertyByComparsionAttribute(validationPropertyValue, (ComparsionValidationAttribute)attr, Object);
+                    result = CheckPropertyByComparsionAttribute(validationPropertyValue,
+                        (ComparsionValidationAttribute) attr, Object);
                 }
                 if (attr is ContainsValidationAttribute)
                 {
-                    result = CheckPropertyByContainsAttribute(validationPropertyValue, (ContainsValidationAttribute)attr, Object);
+                    result = CheckPropertyByContainsAttribute(validationPropertyValue,
+                        (ContainsValidationAttribute) attr, Object);
                 }
                 if (!result)
                 {
-                    
-                    if (Verbose && !string.IsNullOrEmpty(memberValidationComments))
-                    {
-                        ValidationErrors.Add(string.Format("{0}({1})", attr.DisplayName, memberValidationComments));
-                        memberValidationComments = "";
-                    }
-                    else
-                    {
-                        ValidationErrors.Add(attr.DisplayName);
-                    }
+                    errors.Add(new ValidationError(attr.DisplayName, memberValidationComments));
+                    memberValidationComments = "";
                 }
             }
-            
+
             return result;
         }
 
@@ -155,7 +144,15 @@ namespace EasyReflection.Validation
                     bool result;
                     if (ValidationPropertyValue is IEnumerable)
                     {
-                        result = ((IEnumerable) ValidationPropertyValue).Cast<object>().Contains(objectPropertyValue);
+                        object[] validationValues = ((IEnumerable) ValidationPropertyValue).Cast<object>().ToArray();
+                        if (validationValues.Length > 0)
+                        {
+                            result = validationValues.Contains(objectPropertyValue);
+                        }
+                        else
+                        {
+                            result = true;
+                        }
                         if (!result)
                         {
                             memberValidationComments = string.Format("{0} не содержится в [{1}]", objectPropertyValue,
@@ -208,7 +205,7 @@ namespace EasyReflection.Validation
             {
                 return true;
             }
-            memberValidationComments = string.Format("{0} не соответствует {1}", ObjectValue, FilterValue);
+            memberValidationComments = string.Format("{0:.##} не соответствует {1}", ObjectValue, FilterValue);
             return false;
         }
     }

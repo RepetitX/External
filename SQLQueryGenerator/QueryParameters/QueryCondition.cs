@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace SQLQueryGenerator.QueryParameters
 {
     public enum CompareCondition
-    {        
+    {
         Less,
         LessOrEqual,
         Equal,
@@ -36,12 +36,15 @@ namespace SQLQueryGenerator.QueryParameters
                 case "Boolean":
                     value = Value.Value.Equals(true) ? "1" : "0";
                     break;
+                case "DateTime":
+                    value = string.Format("'{0:yyyy-MM-dd HH:mm:ss}'", (IFormattable) Value.Value);
+                    break;                    
                 default:
                     value = Value.Value.ToString();
                     break;
             }
 
-            queryPart = string.Format("({0} {1} {2})", Field.GetQueryPart(), Comparsion.GetSign(), value);
+            queryPart = string.Format("{0} {1} {2}", Field.GetQueryPart(), Comparsion.GetSign(), value);
         }
 
         public QueryCondition(QueryField<T> Field, ListCondition Condition, IEnumerable<T> Values)
@@ -58,5 +61,11 @@ namespace SQLQueryGenerator.QueryParameters
                     Condition == ListCondition.In ? "in" : "not in", values);
             }
         }
-    }    
+
+        public QueryCondition(QueryField<T> Field, NullCondition Condition) :
+            base(Field, Condition)
+        {
+
+        }
+    }
 }

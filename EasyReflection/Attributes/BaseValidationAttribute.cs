@@ -6,6 +6,7 @@ namespace EasyReflection.Attributes
     {
         public string DisplayName { get; set; }
         public string TargetMemberName { get; set; }
+        public string[] Conditions { get; set; }
 
         public BaseValidationAttribute(string DisplayName, string TargetMemberName)
         {

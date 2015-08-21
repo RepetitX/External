@@ -41,11 +41,24 @@ namespace SQLQueryGenerator.QueryParameters
             conditions.Add(new QueryCondition<T>(field, Comparsion, Value));
         }
 
+        public void AddCondition<T>(string FieldName, NullCondition Condition) where T : struct
+        {
+            QueryField<T> field = fieldsContainer.GetQueryField<T>(FieldName);
+            conditions.Add(new QueryCondition<T>(field, Condition));
+        }
+
+        public ConditionGroup AddConditionGroup(ConditionGroupType ConditionType)
+        {
+            ConditionGroup group = new ConditionGroup(ConditionType, fieldsContainer);
+            AddCondition(group);
+            return group;
+        }
 
         public string GetQueryPart()
         {
-            return string.Join("\nand ",
-                conditions.Where(cnd => !cnd.IsEmpty).Select(cnd => string.Format("{0}", cnd.GetQueryPart())));
+            return string.Format("({0})",
+                string.Join(Type == ConditionGroupType.And ? "\nand " : "\nor ",
+                    conditions.Where(cnd => !cnd.IsEmpty).Select(cnd => string.Format("{0}", cnd.GetQueryPart()))));
         }
     }
 }
