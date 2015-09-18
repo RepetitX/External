@@ -137,7 +137,8 @@ namespace EasyReflection
                 Name = regexArray.Replace(Name, "");
                 index = matchArray.Groups["index"].Value;
             }
-            PropertyInfo property = Object.GetType().GetProperty(Name);
+            PropertyInfo property = Object.GetType()
+                .GetProperty(Name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 
             if (property == null)
             {
