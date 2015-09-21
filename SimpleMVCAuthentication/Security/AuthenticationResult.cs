@@ -9,7 +9,13 @@ namespace SimpleMVCAuthentication.Security
 {
     public class AuthenticationResult
     {
-        public AuthenticationResult Result { get; set; }
+        public AuthenticationStatus Status { get; set; }
         public User User { get; set; }
+
+        public AuthenticationResult(AuthenticationStatus Status, User User)
+        {
+            this.Status = Status;
+            this.User = User;
+        }
     }
 }

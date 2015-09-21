@@ -11,5 +11,6 @@ namespace SimpleMVCAuthentication.Settings
         public string CookieName { get; set; }
         public string SessionCookieName { get; set; }
         public int SessionTime { get; set; }
+        public int CookieExpirationTime { get; set; }
     }
 }

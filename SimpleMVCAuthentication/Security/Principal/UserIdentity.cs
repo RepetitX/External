@@ -1,40 +1,36 @@
-﻿using System.Security.Principal;
+﻿using System.Collections.Generic;
+using System.Security.Principal;
 using System.Web.Security;
 
-namespace SimpleMVCAuthentication.Security.Principal 
+namespace SimpleMVCAuthentication.Security.Principal
 {
     public class UserIdentity : IIdentity
     {
-        public int UserAccountId { get; private set; }
-        //public UserGroupCode UserGroup { get; private set; }
+        public int UserId { get; private set; }
         public string Name { get; private set; }
         public string AuthenticationType { get; private set; }
         public bool IsAuthenticated { get; private set; }
+        public List<UserRole> Roles { get; private set; }
 
-        /*public UserIdentity(UserAccount Account)
+        public UserIdentity()
         {
-            AuthenticationType = "UserAccount";
-            if (Account != null)
-            {
-                UserAccountId = Account.Id;
-                Name = Account.Name;
-                IsAuthenticated = true;
-                UserGroup = Account.UserGroup.Code;
-            }
-            else
-            {
-                UserAccountId = 0;
-                Name = "anonym";
-                UserGroup = UserGroupCode.Anonymous;
-                IsAuthenticated = false;
-            }
-        }*/
+            AuthenticationType = "SimpleMVC";
+            IsAuthenticated = true;
+            UserId = 0;
+        }
 
-        public UserIdentity(int UserAccountId, string Name, int UserGroupId)
+        public UserIdentity(string Name, int UserId)
+            : this()
         {
             this.Name = Name;
-            IsAuthenticated = (Name != "anonym");
-            this.UserAccountId = UserAccountId;
+            this.UserId = UserId;
+        }
+
+        public UserIdentity(string Name, bool IsAuthenticated)
+            : this()
+        {
+            this.Name = Name;
+            this.IsAuthenticated = IsAuthenticated;
         }
     }
 }
