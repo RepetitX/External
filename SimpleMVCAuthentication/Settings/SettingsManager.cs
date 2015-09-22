@@ -10,22 +10,18 @@ using System.Xml.Serialization;
 
 namespace SimpleMVCAuthentication.Settings
 {
-    public class SettingsManager
+    public class SettingsManager : IConfigurationSectionHandler
     {
         public static AuthenticationSettings AuthenticationSettings
         {
             get
             {
-                return (AuthenticationSettings)ConfigurationManager.GetSection("ftpSettings");
+                return (AuthenticationSettings)ConfigurationManager.GetSection("authenticationSettings");
             }
         }
 
         public object Create(object parent, object configContext, XmlNode section)
-        {
-            if (section.Attributes["type"] == null)
-            {
-                return null;
-            }
+        {            
             XmlSerializer ser = new XmlSerializer(typeof(AuthenticationSettings));
             StringReader reader = new StringReader(section.InnerXml);
             XmlReader xmlRead = XmlReader.Create(reader);

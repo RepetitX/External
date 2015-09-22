@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using SimpleMVCAuthentication.Security;
-using SimpleMVCAuthentication.Settings;
+using SimpleMVCAuthentication.Security.Principal;
 
 namespace SimpleMVCAuthentication.Modules
 {
     public abstract class SimpleAuthenticationModule : IAuthenticationModule
     {
-        protected abstract IAuthenticationManager AuthenticationManager { get; set; }
+        protected abstract IAuthenticationHandler AuthenticationHandler { get; set; }
 
         public void Init(HttpApplication context)
         {
@@ -21,12 +17,14 @@ namespace SimpleMVCAuthentication.Modules
 
         private void AuthenticateRequest(object sender, EventArgs e)
         {
-            //SettingsManager.
+            User user = AuthenticationHandler.AuthenticateRequest(HttpContext.Current);
         }
+
+        public abstract void RequestAuthenticated(User User);
 
         public void OnLogRequest(Object source, EventArgs e)
         {
-            //custom logging logic can go here
+
         }
 
         public void Dispose()

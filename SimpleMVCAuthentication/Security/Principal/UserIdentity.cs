@@ -8,6 +8,7 @@ namespace SimpleMVCAuthentication.Security.Principal
     {
         public int UserId { get; private set; }
         public string Name { get; private set; }
+        public string DisplayName { get; private set; }
         public string AuthenticationType { get; private set; }
         public bool IsAuthenticated { get; private set; }
         public List<UserRole> Roles { get; private set; }
@@ -24,6 +25,12 @@ namespace SimpleMVCAuthentication.Security.Principal
         {
             this.Name = Name;
             this.UserId = UserId;
+        }
+
+        public UserIdentity(string Name, int UserId, string DisplayName)
+            : this(Name, UserId)
+        {
+            this.DisplayName = DisplayName;
         }
 
         public UserIdentity(string Name, bool IsAuthenticated)
