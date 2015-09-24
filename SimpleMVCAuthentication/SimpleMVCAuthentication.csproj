@@ -52,6 +52,7 @@
     <Compile Include="Security\Principal\UserIdentity.cs" />
     <Compile Include="Security\Principal\UserRole.cs" />
     <Compile Include="Security\SimpleAuthenticationHandler.cs" />
+    <Compile Include="Security\SimpleAuthenticationTicket.cs" />
     <Compile Include="Settings\AuthenticationSettings.cs" />
     <Compile Include="Settings\SettingsManager.cs" />
   </ItemGroup>

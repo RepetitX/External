@@ -6,23 +6,30 @@ using SimpleMVCAuthentication.Settings;
 
 namespace SimpleMVCAuthentication.Security
 {
-    public abstract class SimpleAuthenticationHandler : IAuthenticationHandler
+    public abstract class SimpleAuthenticationHandler : IAuthenticationHandler 
     {
         public abstract AuthenticationResult Authenticate(string Login, string Password);
         public abstract AuthenticationResult Authenticate(string Login);
 
-        public HttpCookie CreateAuthCookie(User User, bool KeepLoggedIn)
+        public void LogOut(HttpContextBase Context)
         {
-            HttpCookie cookie = new HttpCookie(SettingsManager.AuthenticationSettings.CookieName);
+            HttpCookie authCookie = Context.Request.Cookies[SettingsManager.AuthenticationSettings.CookieName];
+            if (authCookie != null)
+            {
+                authCookie.Expires = DateTime.Now;
+                Context.Response.SetCookie(authCookie);
+            }
 
-            cookie.Expires = DateTime.Now.AddDays(SettingsManager.AuthenticationSettings.DaysToExpiration);
+            HttpCookie sessionCookie = Context.Request.Cookies[SettingsManager.AuthenticationSettings.SessionCookieName];
 
-            cookie.Value = EncryptUser(User);
-
-            return cookie;
+            if (sessionCookie != null)
+            {
+                sessionCookie.Expires = DateTime.Now;
+                Context.Response.SetCookie(sessionCookie);
+            }
         }
-
-        public User AuthenticateRequest(HttpContext Context)
+        
+        public User AuthenticateRequest(HttpContextBase Context)
         {
             HttpCookie cookie = Context.Request.Cookies[SettingsManager.AuthenticationSettings.CookieName];
 
@@ -56,6 +63,8 @@ namespace SimpleMVCAuthentication.Security
 
             if (result.Status == AuthenticationStatus.Success)
             {
+                //Надо обновить cookie, на случай если права изменились  
+                UpdateCookie(Context.Response, cookie, result.User);
                 return user;
             }
             //Проверка не пройдена, убираем пользователя
@@ -66,6 +75,37 @@ namespace SimpleMVCAuthentication.Security
             Context.User = User.Anonymous;
 
             return User.Anonymous;
+        }
+
+        public HttpCookie CreateAuthCookie(User User, bool KeepLoggedIn)
+        {
+            HttpCookie cookie = new HttpCookie(SettingsManager.AuthenticationSettings.CookieName);
+
+            if (KeepLoggedIn)
+            {
+                cookie.Expires = DateTime.Now.AddDays(SettingsManager.AuthenticationSettings.DaysToExpiration);
+            }
+
+            cookie.Value = EncryptUser(User, KeepLoggedIn);
+
+            return cookie;
+        }
+
+        protected void UpdateCookie(HttpResponseBase Response, HttpCookie cookie, User User)
+        {
+            SimpleAuthenticationTicket ticket = new SimpleAuthenticationTicket(cookie.Value);
+            //Если KeepLoggedIn, то продляем
+            if (ticket.KeepLoggedIn)
+            {
+                ticket.ExpirationDate = DateTime.Now.AddDays(SettingsManager.AuthenticationSettings.DaysToExpiration);
+                cookie.Expires = ticket.ExpirationDate;
+            }
+
+            ticket.User = User;
+
+            cookie.Value = ticket.Encrypt();
+
+            Response.SetCookie(cookie);
         }
 
         public HttpCookie CreateSessionCookie(User User)
@@ -82,34 +122,31 @@ namespace SimpleMVCAuthentication.Security
             return cookie;
         }
 
-        protected string EncryptUser(User User)
+        public void SetCookies(HttpResponseBase Response, User User, bool KeepLoggedIn)
         {
-            //Пока используем FormsAuthenticationTicket
+            HttpCookie cookie = CreateAuthCookie(User, KeepLoggedIn);
+            Response.SetCookie(cookie);
 
-            string userData = string.Format("UserId={0};DisplayName={1}", User.UserIdentity.UserId,
-                User.UserIdentity.DisplayName);
+            cookie = CreateSessionCookie(User);
+            if (cookie != null)
+            {
+                Response.SetCookie(cookie);
+            }
+        }
 
-            FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1, User.Identity.Name, DateTime.Now,
-                DateTime.Now.AddDays(SettingsManager.AuthenticationSettings.DaysToExpiration), true, userData);
+        protected string EncryptUser(User User, bool KeepLoggedIn)
+        {
+            SimpleAuthenticationTicket ticket = new SimpleAuthenticationTicket(User, DateTime.Now,
+                DateTime.Now.AddDays(SettingsManager.AuthenticationSettings.DaysToExpiration), KeepLoggedIn);
 
-            return FormsAuthentication.Encrypt(ticket);
+            return ticket.Encrypt();
         }
 
         protected User DecryptUser(string EncryptedUser)
         {
-            FormsAuthenticationTicket ticket = FormsAuthentication.Decrypt(EncryptedUser);
+            SimpleAuthenticationTicket ticket = new SimpleAuthenticationTicket(EncryptedUser);
 
-            if (ticket == null)
-            {
-                return User.Anonymous;
-            }
-            //И здесь по-индусски пока
-            string[] userData = ticket.UserData.Split(';');
-
-            int userId = int.Parse(userData[0].Split('=')[1]);
-            string displayName = userData[1].Split('=')[1];
-
-            return new User(ticket.Name, userId, displayName);
+            return ticket.User;
         }
     }
 }

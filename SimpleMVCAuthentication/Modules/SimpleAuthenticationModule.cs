@@ -17,7 +17,7 @@ namespace SimpleMVCAuthentication.Modules
 
         private void AuthenticateRequest(object sender, EventArgs e)
         {
-            User user = AuthenticationHandler.AuthenticateRequest(HttpContext.Current);
+            User user = AuthenticationHandler.AuthenticateRequest(new HttpContextWrapper(HttpContext.Current));
         }
 
         public abstract void RequestAuthenticated(User User);
