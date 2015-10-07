@@ -32,6 +32,11 @@ namespace SimpleMVCAuthentication.Security.Principal
             Identity = new UserIdentity(Name, IsAuthenticated);
         }
 
+        public User(UserIdentity UserIdentity)
+        {
+            Identity = UserIdentity;
+        }
+
         public static User Anonymous
         {
             get { return new User("anonymous", false); }

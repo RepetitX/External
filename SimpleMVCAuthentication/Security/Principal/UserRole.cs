@@ -11,5 +11,11 @@ namespace SimpleMVCAuthentication.Security.Principal
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+
+        public UserRole(int Id, string Name)
+        {
+            this.Id = Id;
+            this.Name = Name;
+        }
     }
 }

@@ -18,6 +18,7 @@ namespace SimpleMVCAuthentication.Security.Principal
             AuthenticationType = "SimpleMVC";
             IsAuthenticated = true;
             UserId = 0;
+            Roles = new List<UserRole>();
         }
 
         public UserIdentity(string Name, int UserId)
@@ -31,6 +32,12 @@ namespace SimpleMVCAuthentication.Security.Principal
             : this(Name, UserId)
         {
             this.DisplayName = DisplayName;
+        }
+
+        public UserIdentity(string Name, int UserId, string DisplayName, List<UserRole> Roles)
+            : this(Name, UserId, DisplayName)
+        {
+            this.Roles = Roles;
         }
 
         public UserIdentity(string Name, bool IsAuthenticated)
