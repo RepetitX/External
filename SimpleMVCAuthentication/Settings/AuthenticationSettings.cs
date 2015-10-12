@@ -6,5 +6,6 @@
         public string SessionCookieName { get; set; }
         public int SessionTimeOut { get; set; }
         public int DaysToExpiration { get; set; }
+        public string EncryptionKey { get; set; }
     }
 }

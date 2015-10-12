@@ -33,6 +33,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,10 +48,12 @@
     <Compile Include="Security\AuthenticationResult.cs" />
     <Compile Include="Security\AuthenticationStatus.cs" />
     <Compile Include="Security\IAuthenticationHandler.cs" />
-    <Compile Include="Security\Principal\ISessionUser.cs" />
+    <Compile Include="Security\ICryptoProvider.cs" />
+    <Compile Include="Security\Principal\SessionData.cs" />
     <Compile Include="Security\Principal\User.cs" />
     <Compile Include="Security\Principal\UserIdentity.cs" />
     <Compile Include="Security\Principal\UserRole.cs" />
+    <Compile Include="Security\RijndaelCryptoProvider.cs" />
     <Compile Include="Security\SimpleAuthenticationHandler.cs" />
     <Compile Include="Security\SimpleAuthenticationTicket.cs" />
     <Compile Include="Settings\AuthenticationSettings.cs" />

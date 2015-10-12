@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Web;
-using System.Web.Security;
 using SimpleMVCAuthentication.Security.Principal;
 using SimpleMVCAuthentication.Settings;
 
@@ -10,6 +9,9 @@ namespace SimpleMVCAuthentication.Security
     {
         public abstract AuthenticationResult Authenticate(string Login, string Password);
         public abstract AuthenticationResult Authenticate(string Login);
+
+        protected ICryptoProvider cryptoProvider =
+            new RijndaelCryptoProvider(SettingsManager.AuthenticationSettings.EncryptionKey);
 
         public void LogOut(HttpContextBase Context)
         {
@@ -27,8 +29,9 @@ namespace SimpleMVCAuthentication.Security
                 sessionCookie.Expires = DateTime.Now;
                 Context.Response.SetCookie(sessionCookie);
             }
+            Context.User = User.Anonymous;
         }
-        
+
         public User AuthenticateRequest(HttpContextBase Context)
         {
             HttpCookie cookie = Context.Request.Cookies[SettingsManager.AuthenticationSettings.CookieName];
@@ -37,35 +40,49 @@ namespace SimpleMVCAuthentication.Security
             if (cookie == null)
             {
                 user = User.Anonymous;
+                Context.User = user;
+                return user;
             }
-            else
-            {
-                user = DecryptUser(cookie.Value);
-            }
-            Context.User = user;
+            SimpleAuthenticationTicket ticket = new SimpleAuthenticationTicket(cookie.Value);
 
-            if (!user.Identity.IsAuthenticated)
+            if (string.IsNullOrWhiteSpace(ticket.UserName))
             {
+                //cookie испорчен
+                cookie.Expires = DateTime.Now;
+                Context.Response.SetCookie(cookie);
+                user = User.Anonymous;
+                Context.User = user;
                 return user;
             }
             //Проверка данных пользователя
 
             HttpCookie sessionCookie = Context.Request.Cookies[SettingsManager.AuthenticationSettings.SessionCookieName];
 
-            if (sessionCookie != null && sessionCookie.Expires > DateTime.Now)
+            if (sessionCookie != null)
             {
-                //Проверка пока не нужна
-                return user;
+                var sessionData = DecryptSessionData(sessionCookie);
+
+                if (sessionData != null && sessionData.ExpirationDate > DateTime.Now)
+                {
+                    //Проверка пока не нужна
+
+                    user = GetUser(ticket, sessionData);
+                    Context.User = user;
+                    return user;
+                }
             }
             //Нужна проверка
 
-            AuthenticationResult result = Authenticate(user.Identity.Name);
+            AuthenticationResult result = Authenticate(ticket.UserName);
 
             if (result.Status == AuthenticationStatus.Success)
             {
                 //Надо обновить cookie, на случай если права изменились  
-                UpdateCookie(Context.Response, cookie, result.User);
-                return user;
+                UpdateAuthCookie(Context.Response, cookie);
+                sessionCookie = CreateSessionCookie(result.User);
+                Context.Response.SetCookie(sessionCookie);
+                Context.User = result.User;
+                return result.User;
             }
             //Проверка не пройдена, убираем пользователя
 
@@ -91,7 +108,7 @@ namespace SimpleMVCAuthentication.Security
             return cookie;
         }
 
-        protected void UpdateCookie(HttpResponseBase Response, HttpCookie cookie, User User)
+        protected void UpdateAuthCookie(HttpResponseBase Response, HttpCookie cookie)
         {
             SimpleAuthenticationTicket ticket = new SimpleAuthenticationTicket(cookie.Value);
             //Если KeepLoggedIn, то продляем
@@ -100,8 +117,6 @@ namespace SimpleMVCAuthentication.Security
                 ticket.ExpirationDate = DateTime.Now.AddDays(SettingsManager.AuthenticationSettings.DaysToExpiration);
                 cookie.Expires = ticket.ExpirationDate;
             }
-
-            ticket.User = User;
 
             cookie.Value = ticket.Encrypt();
 
@@ -115,12 +130,13 @@ namespace SimpleMVCAuthentication.Security
             {
                 return null;
             }
-            HttpCookie cookie = new HttpCookie(SettingsManager.AuthenticationSettings.SessionCookieName);
+            HttpCookie cookie = new HttpCookie(SettingsManager.AuthenticationSettings.SessionCookieName);            
 
             cookie.Expires = DateTime.Now.AddMinutes(SettingsManager.AuthenticationSettings.SessionTimeOut);
+            cookie.Value = EncryptSessionData(new SessionData(User, cookie.Expires));
 
             return cookie;
-        }
+        }        
 
         public void SetCookies(HttpResponseBase Response, User User, bool KeepLoggedIn)
         {
@@ -134,19 +150,43 @@ namespace SimpleMVCAuthentication.Security
             }
         }
 
+        protected User GetUser(SimpleAuthenticationTicket Ticket, SessionData Data)
+        {
+            UserIdentity identity = new UserIdentity(Ticket.UserName, Data.UserId, Data.UserDisplayName, Data.Roles);
+
+            return new User(identity);
+        }
+
         protected string EncryptUser(User User, bool KeepLoggedIn)
         {
-            SimpleAuthenticationTicket ticket = new SimpleAuthenticationTicket(User, DateTime.Now,
+            SimpleAuthenticationTicket ticket = new SimpleAuthenticationTicket(User.Identity.Name, DateTime.Now,
                 DateTime.Now.AddDays(SettingsManager.AuthenticationSettings.DaysToExpiration), KeepLoggedIn);
 
             return ticket.Encrypt();
-        }
+        }        
 
-        protected User DecryptUser(string EncryptedUser)
+        protected SessionData DecryptSessionData(HttpCookie SessionCookie)
         {
-            SimpleAuthenticationTicket ticket = new SimpleAuthenticationTicket(EncryptedUser);
-
-            return ticket.User;
+            if (SessionCookie == null)
+            {
+                return null;
+            }
+            try
+            {
+                return cryptoProvider.Decrypt<SessionData>(SessionCookie.Value);
+            }
+            catch (Exception e)
+            {
+                
+            }            
+            return null;
         }
+
+        protected string EncryptSessionData(SessionData Data)
+        {
+            return cryptoProvider.Encrypt(Data);
+        }
+
+
     }
 }
