@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web;
 using SimpleMVCAuthentication.Security;
 using SimpleMVCAuthentication.Security.Principal;
@@ -9,15 +10,32 @@ namespace SimpleMVCAuthentication.Modules
     {
         protected abstract IAuthenticationHandler AuthenticationHandler { get; set; }
 
+        protected readonly string[] defaultIgnoredExtensions =
+        {
+            ".js", ".css", ".png", ".woff2", ".jpg", ".jpeg", ".gif"
+        };
+
+        protected List<string> IgnoredExtensions;
+
         public void Init(HttpApplication context)
         {
             context.LogRequest += OnLogRequest;
             context.AuthenticateRequest += AuthenticateRequest;
+
+            IgnoredExtensions = new List<string>(defaultIgnoredExtensions);
         }
 
         private void AuthenticateRequest(object sender, EventArgs e)
         {
+            //Не проверяем ресурсы и статические файлы
+            if (IgnoredExtensions.Contains(HttpContext.Current.Request.CurrentExecutionFilePathExtension))
+            {
+                return;
+            }
+
             User user = AuthenticationHandler.AuthenticateRequest(new HttpContextWrapper(HttpContext.Current));
+
+            RequestAuthenticated(user);
         }
 
         public abstract void RequestAuthenticated(User User);
